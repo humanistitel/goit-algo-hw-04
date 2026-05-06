@@ -12,7 +12,7 @@
 ### Запуск
 
 ```bash
-python task1.py <source_dir> [destination_dir]
+python3 task1.py <source_dir> [destination_dir]
 ```
 
 * `source_dir` — шлях до вихідної директорії (обов'язковий).
@@ -21,7 +21,7 @@ python task1.py <source_dir> [destination_dir]
 ### Приклад
 
 ```bash
-python task1.py ./my_files ./sorted_files
+python3 task1.py ./my_files ./sorted_files
 ```
 
 Після виконання всі файли з `./my_files` (включно з вкладеними директоріями) будуть
@@ -48,7 +48,7 @@ sorted_files/
 ### Запуск
 
 ```bash
-python task2.py
+python3 task2.py
 ```
 
 Програма запитає рівень рекурсії (0 і більше):
@@ -70,7 +70,7 @@ Enter the recursion level (0 or more): 4
 ### Запуск
 
 ```bash
-python task3.py
+python3 task3.py
 ```
 
 ### Алгоритми

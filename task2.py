@@ -1,44 +1,63 @@
-import turtle
 import math
+import matplotlib.pyplot as plt
 
 
-def koch_segment(t: turtle.Turtle, length: float, level: int) -> None:
-    """Draw a single Koch curve segment recursively."""
+def koch_points(x1: float, y1: float, x2: float, y2: float, level: int, points: list) -> None:
+    """Recursively compute all line-segment endpoints for one Koch edge."""
     if level == 0:
-        t.forward(length)
+        points.append((x2, y2))
         return
 
-    length /= 3
-    koch_segment(t, length, level - 1)
-    t.left(60)
-    koch_segment(t, length, level - 1)
-    t.right(120)
-    koch_segment(t, length, level - 1)
-    t.left(60)
-    koch_segment(t, length, level - 1)
+    # Divide segment into thirds
+    dx = (x2 - x1) / 3
+    dy = (y2 - y1) / 3
+
+    ax, ay = x1 + dx, y1 + dy          # 1/3 point
+    bx, by = x1 + 2 * dx, y1 + 2 * dy  # 2/3 point
+
+    # Peak of the equilateral triangle
+    px = ax + (bx - ax) * math.cos(math.radians(60)) - (by - ay) * math.sin(math.radians(60))
+    py = ay + (bx - ax) * math.sin(math.radians(60)) + (by - ay) * math.cos(math.radians(60))
+
+    koch_points(x1, y1, ax, ay, level - 1, points)
+    koch_points(ax, ay, px, py, level - 1, points)
+    koch_points(px, py, bx, by, level - 1, points)
+    koch_points(bx, by, x2, y2, level - 1, points)
 
 
-def draw_koch_snowflake(level: int, size: float = 300) -> None:
-    """Draw a Koch snowflake with the given recursion level."""
-    screen = turtle.Screen()
-    screen.title(f"Koch Snowflake — Level {level}")
-    screen.bgcolor("white")
+def draw_koch_snowflake(level: int) -> None:
+    """Draw a Koch snowflake with the given recursion level using matplotlib."""
+    # Equilateral triangle vertices (pointing up, centred at origin)
+    r = 1.0
+    vertices = [
+        (r * math.cos(math.radians(90 + i * 120)),
+         r * math.sin(math.radians(90 + i * 120)))
+        for i in range(3)
+    ]
 
-    t = turtle.Turtle()
-    t.speed(0)
-    t.penup()
+    all_x, all_y = [], []
+    for i in range(3):
+        x1, y1 = vertices[i]
+        x2, y2 = vertices[(i + 1) % 3]
+        all_x.append(x1)
+        all_y.append(y1)
+        pts: list = []
+        koch_points(x1, y1, x2, y2, level, pts)
+        for px, py in pts:
+            all_x.append(px)
+            all_y.append(py)
 
-    # Position the turtle so the snowflake is centered
-    t.goto(-size / 2, size / (2 * math.sqrt(3)))
-    t.pendown()
-    t.pencolor("blue")
+    # Close the shape
+    all_x.append(all_x[0])
+    all_y.append(all_y[0])
 
-    for _ in range(3):
-        koch_segment(t, size, level)
-        t.right(120)
-
-    t.hideturtle()
-    screen.mainloop()
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ax.plot(all_x, all_y, color="royalblue", linewidth=0.8)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.set_title(f"Koch Snowflake — Level {level}", fontsize=14)
+    plt.tight_layout()
+    plt.show()
 
 
 def get_recursion_level() -> int:
